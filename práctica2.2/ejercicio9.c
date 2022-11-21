@@ -35,6 +35,7 @@ switch (sb.st_mode & S_IFMT) {
            break;
            case S_IFREG:  printf("Fichero regular\n"); 
            break;
+           
            default:       printf("desconocida\n"); 
            break;
 }
