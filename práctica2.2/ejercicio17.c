@@ -36,11 +36,11 @@ int main(int argc, char *argv[]){
                  printf("%s/\n",dirent->d_name);
                     break;
                 case S_IFLNK:  ;
-                    char *buf=malloc(500);
+                    char buf[500];
                     int y=readlink(c,buf,500);//pasarle la ruta completa
-                    buf[y+1]='\0';//readlink no devuelve el caracter nulo
+                    buf[y]='\0';//readlink no devuelve el caracter nulo
                     printf("%s->%s\n",dirent->d_name,buf);
-                    free(buf);
+                    
                     break;
                 case S_IFREG: 
                      if((sb.st_mode &  S_IXUSR) && (sb.st_mode &   S_IXGRP  ) && (sb.st_mode &   S_IXOTH )){ //permisos de x para g , u y o
