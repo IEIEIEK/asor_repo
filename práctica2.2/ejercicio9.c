@@ -4,12 +4,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/sysmacros.h>
+#include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
+
 
 
 
 
 int main(){
-struct stat sb;         
+struct stat sb;  
+
+int fd=open("archivoabierto.txt",O_CREAT,0645);
+if(fd==-1){
+    perror("Error al abrir/crear archivo");
+}else{
+    close(fd);
+   
 if (stat("archivoabierto.txt", &sb) == -1) {
                perror("stat");
                exit(EXIT_FAILURE);
@@ -28,5 +39,6 @@ switch (sb.st_mode & S_IFMT) {
            break;
 }
 printf("Ultimo acceso al archivo:  %s", ctime(&sb.st_atime));
+}
 return 0;
 }
