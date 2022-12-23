@@ -28,13 +28,15 @@ int main(int argc, char *argv[])
     freeaddrinfo(resul);
     while(1){
     char buffer[100];
-    read(0,buffer,0777);
+    int sizee=read(0,buffer,0777);
+    buffer[sizee]='\0';
     if(buffer[0]=='Q'){
         close(sd);
         break;
     }else{
-        send(sd,buffer,80,0);
-        int bytes=recv(sd,buffer,80,0);
+        send(sd,buffer,sizee,0);
+        int bytes=recv(sd,buffer,100,0);
+        buffer[bytes]='\0';
         if(bytes==0){
         close(sd);
         return 0;

@@ -1,13 +1,23 @@
 #include <stdio.h>
-
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <netdb.h>
 #include <sys/types.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <time.h>
 #include <unistd.h>
+#include <signal.h>
+void child(int s){
+    while(waitpid(0,NULL,WNOHANG)!=-1){};
+
+}
 int main(int argc, char **argv)
 {
+     struct sigaction sa;
+    sa.sa_handler=child;
+    sa.sa_flags=SA_RESTART;
+    sigaction(SIGCHLD,&sa,0);
     if(argc<3){
         printf("Errror en los argumentos\n");
         return -1;
@@ -37,18 +47,29 @@ int main(int argc, char **argv)
         char serv[NI_MAXSERV];
         struct sockaddr_storage cliente;
         socklen_t clientelen=sizeof(struct sockaddr_storage);
+        while(1){
         int clientsd=accept(sd,(struct sockaddr*)&cliente,&clientelen);
-        getnameinfo((struct sockaddr*)&cliente,clientelen,host,NI_MAXHOST,serv,NI_MAXSERV,0);
-        printf("Conexion de %s:%s\n",host,serv);
-        int c=0;
-        while((c=recv(clientsd,buffer,80,0))!=0){
-            send(clientsd,buffer,c,0);
+        pid_t pid= fork();
+        if(pid==0){
+            close(sd);
+                getnameinfo((struct sockaddr*)&cliente,clientelen,host,NI_MAXHOST,serv,NI_MAXSERV,0);
+                printf("[PID:%i] Conexion de %s:%s\n",getpid(),host,serv);
+                int c=0;
+                while((c=recv(clientsd,buffer,80,0))!=0){
+                    send(clientsd,buffer,c,0);
+                }
+                if(c==0){
+                 printf("[PID:%i] conexion finalizada para %s:%s\n",getpid(),host,serv);
+                }
+
+            close(clientsd);
+            return 0;
+        }else{
+            close(clientsd);
         }
-        if(c==0){
-            break;
-        }
-        close(clientsd);
+       
      }
+    }
    printf("Conexion finalizada\n");
 return 0;
 }

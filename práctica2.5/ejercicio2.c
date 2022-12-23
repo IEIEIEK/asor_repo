@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+#include <unistd.h>
 #include <netdb.h>
 #include <sys/types.h>
 #include <string.h>
@@ -35,11 +35,11 @@ int main(int argc, char **argv)
         char serv[NI_MAXSERV];
         struct sockaddr_storage cliente;
         socklen_t clientelen=sizeof(struct sockaddr_storage);
-        ssize_t bytes=recvfrom(sd,buffer,99,0,(struct sockaddr*)&cliente,
+        int bytes=recvfrom(sd,buffer,99,0,(struct sockaddr*)&cliente,
         &clientelen);
         buffer[bytes]='\0';
         getnameinfo((struct sockaddr*)&cliente,clientelen,host,NI_MAXHOST,serv,NI_MAXSERV,0);
-        printf("%i bytes de %s:%s\n",clientelen,host,serv);
+        printf("%i bytes de %s:%s\n",bytes,host,serv);
         char t[]="t";
         char q[]="q";
         char d[]="d";
@@ -56,12 +56,14 @@ int main(int argc, char **argv)
             char f[64];
          
         if(d[0]==buffer[0]){
-            strftime(f, sizeof(f), "%x", tm);
-            sendto(sd,f,sizeof(f),0,(struct sockaddr*)&cliente,clientelen);
+            int y=strftime(f, sizeof(f), "%x", tm);
+            f[y]='\0';
+            sendto(sd,f,y,0,(struct sockaddr*)&cliente,clientelen);
         }else{
         if(t[0]==buffer[0]){
-             strftime(f, sizeof(f), "%c", tm);
-             sendto(sd,f,sizeof(f),0,(struct sockaddr*)&cliente,clientelen);
+             int y=strftime(f, sizeof(f), "%c", tm);
+             f[y]='\0';
+             sendto(sd,f,y,0,(struct sockaddr*)&cliente,clientelen);
             
         }else{
             printf("Comando %s no soportado\n",buffer);

@@ -48,12 +48,12 @@ int main(int argc, char **argv)
         if(FD_ISSET(sd,&set)){
             
             
-            ssize_t bytes=recvfrom(sd,buffer,99,0,(struct sockaddr*)&cliente,
+            int bytes=recvfrom(sd,buffer,99,0,(struct sockaddr*)&cliente,
             &clientelen);
             
             buffer[bytes]='\0';
             getnameinfo((struct sockaddr*)&cliente,clientelen,host,NI_MAXHOST,serv,NI_MAXSERV,0);
-            printf("%i bytes de %s:%s\n",clientelen,host,serv);
+            printf("%i bytes de %s:%s\n",bytes,host,serv);
             choose=1;
         }else{
             read(0,buffer,0777);
@@ -75,19 +75,19 @@ int main(int argc, char **argv)
             tm = localtime(&now);
             char f[64];
         if(d[0]==buffer[0]){
-            strftime(f, sizeof(f), "%x", tm);
+            int y=strftime(f, sizeof(f), "%x", tm);
             if(choose==1){
             
-            sendto(sd,f,sizeof(f),0,(struct sockaddr*)&cliente,clientelen);
+            sendto(sd,f,y,0,(struct sockaddr*)&cliente,clientelen);
             }else{
             printf("[CONSOLA]:%s\n",f);
             }
         }else{
         if(t[0]==buffer[0]){
-            strftime(f, sizeof(f), "%c", tm);
+            int y=strftime(f, sizeof(f), "%c", tm);
             if(choose==1){
              
-             sendto(sd,f,sizeof(f),0,(struct sockaddr*)&cliente,clientelen);
+             sendto(sd,f,y,0,(struct sockaddr*)&cliente,clientelen);
             }else{
                 printf("[CONSOLA]:%s\n",f);
             }
